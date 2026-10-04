@@ -1,0 +1,52 @@
+================================================================================
+                    ONE-PAGE TECHNICAL PROGRESS SHEET
+================================================================================
+Project Title : Smart Coal Mine Environmental Monitoring & Automated Safety System
+Platform      : ESP32-S2 | Simulation: Wokwi | Architecture: Master-Slave Hybrid RF-IoT
+
+1. PROBLEM STATEMENT
+--------------------------------------------------------------------------------
+Underground coal mines present extreme hazards due to Methane gas accumulation, sudden temperature spikes, and water ingress. Traditional Wi-Fi/cellular signals cannot penetrate deep underground shafts, causing communication blackouts. Target users (mine workers, safety officers, rescue teams) require immediate, latency-free hazard detection to prevent fatal disasters.
+
+2. PROPOSED SOLUTION
+--------------------------------------------------------------------------------
+An automated safety system using a Master-Slave IoT Architecture. Underground Slave nodes collect sensor data and trigger instant local hardwired alarms (Buzzer & LED) within 200 ms. Telemetry is relayed via Sub-GHz RF/ESP-NOW to a Surface Master Gateway, which transmits JSON payloads over MQTT/Wi-Fi to the Cloud for automated rescue alerts.
+
+3. SYSTEM ARCHITECTURE DIAGRAM
+--------------------------------------------------------------------------------
+[ Underground Sensors ] ---> [ Slave ESP32-S2 ] ---> [ Local Alarm: Buzzer & LED ]
+                                   | (Sub-GHz RF / ESP-NOW)
+                                   v
+[ Emergency Rescue / Cloud ] <--- [ Master Gateway ] ---> [ Local 16x2 LCD Display ]
+                                (Wi-Fi / MQTT)
+
+4. CURRENT PROGRESS (PROOF-OF-CONCEPT STAGE)
+--------------------------------------------------------------------------------
+* Wokwi Circuit Verified: ESP32-S2 schematic fully configured with clean GPIO mapping (GPIOs 1, 2, 8, 9, 11, 12, 13).
+* Threshold Actuation: Temp (>45°C), Gas (>2000 ADC), and Water (>2000 ADC) breaches trigger local alarms instantly.
+* Telemetry Validated: Live JSON output verified on Serial Monitor:
+  {"status":"CRITICAL_DANGER", "temp":48.5, "gas":2450}
+
+5. TECHNOLOGY STACK
+--------------------------------------------------------------------------------
+* Hardware & Simulation: ESP32-S2 DevKit, DHT22 Sensor, Dual Analog Potentiometers (Gas/Water Emulated), 16x2 I2C LCD, Active Buzzer, Red LED, Wokwi Simulator.
+* Firmware & Protocols: C++ (Arduino Core), Sub-GHz RF / ESP-NOW, MQTT/HTTP, JSON Telemetry Standard.
+
+6. TESTING & RESULTS
+--------------------------------------------------------------------------------
+Test Scenario      Simulated Input        Observed Output            Status
+--------------------------------------------------------------------------------
+Normal State       Temp: 30°C, Gas: 450   Alarms OFF, LCD Live Data  PASSED
+High Temperature   Temp > 45°C            Buzzer & LED ON (<200ms)   PASSED
+Gas / Water Leak   Potentiometer > 2000   Instant local actuation    PASSED
+
+7. LIMITATIONS & TECHNICAL RISKS
+--------------------------------------------------------------------------------
+* RF Attenuation: Thick underground rock walls can degrade RF signal propagation (mitigated using directional antennas).
+* Emulated Sensors: Simulation uses potentiometers for Gas/Water; physical deployment requires calibrated hardware sensors.
+
+8. NEXT STEPS
+--------------------------------------------------------------------------------
+1. Hardware Prototype: Assemble physical prototype using real ESP32 boards and MQ-2 gas sensors.
+2. LoRa & Cloud Dashboards: Integrate SX1276 LoRa modules for >2 km range and connect MQTT directly to Blynk/ThingSpeak with Twilio SMS integration.
+================================================================================
